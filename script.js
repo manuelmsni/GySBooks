@@ -3,6 +3,24 @@ const sheetId = "1UMHM7iYsX5vafyNO-WTmMki4M9L_AiohXvUr_7a7dAI";
 
 var products = [];
 
+var amazonLink = 'https://www.amazon.com/';
+
+fetch('https://ipapi.co/json/')
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.country);
+    switch (data.country) {
+        case 'ES':
+            amazonLink = 'https://www.amazon.es/';
+            break;
+        case 'FR':
+            amazonLink = 'https://www.amazon.fr/';
+            break;
+        default:
+            amazonLink = 'https://www.amazon.com/';
+    }
+});
+
 async function fetchFileContent(url) {
     const response = await fetch(url);
     const data = await response.text();
@@ -89,7 +107,8 @@ function generateProductHTML(product) {
         </div>
     `;
     productDiv.addEventListener('click', () => {
-        window.open(product.ProductURL, '_blank');
+        link = product.ProductURL.startsWith('http') ? product.ProductURL : amazonLink + product.ProductURL;
+        window.open(link, '_blank');
     });
     return productDiv;
 }
