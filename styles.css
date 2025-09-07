@@ -11,6 +11,7 @@ h2 {
     margin: 0 0 10px;
     font-family: 'Henny Penny', cursive;
     font-size: 24px;
+    border-bottom: 1px solid gray;
 }
 
 .products-section{
