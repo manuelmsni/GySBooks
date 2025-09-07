@@ -26,7 +26,7 @@ function parseCSV(csv) {
             row.push(current);
             current = '';
         } else if ((char === '\n' || char === '\r') && !inQuotes) {
-            if (char === '\r' && csv[i + 1] === '\n') i++; // ignorar \r\n
+            if (char === '\r' && csv[i + 1] === '\n') i++;
             row.push(current);
             rows.push(row);
             row = [];
@@ -55,12 +55,10 @@ async function fetchGoogleSheetsCSV(sheetId, sheetGID) {
 
 async function fetchGoogleSheetsCSVAsJson(sheetId, sheetGID = 0) {
     const array2D = await this.fetchGoogleSheetsCSV(sheetId, sheetGID);
-
     if (!array2D || array2D.length < 2) {
         if (this.debugMode) console.error("CSV no tiene suficientes datos.");
         return [];
     }
-
     const [headers, ...rows] = array2D;
     return rows.map(row => {
         let obj = {};
@@ -87,7 +85,7 @@ function generateProductHTML(product) {
         </div>
         <div class="product-info">
             <h2>${product.Name}</h2>
-            <p>${product.Description}</p>
+            <p>${product.Description.replace(/\n/g, '<br>')}</p>
         </div>
     `;
     productDiv.addEventListener('click', () => {
