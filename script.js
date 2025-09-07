@@ -1,8 +1,6 @@
-
 const sheetId = "1UMHM7iYsX5vafyNO-WTmMki4M9L_AiohXvUr_7a7dAI";
-
 var products = [];
-
+var countryCode = 'US';
 var amazonLink = 'https://www.amazon.com/';
 
 fetch('https://geolocation-db.com/json/')
@@ -14,20 +12,36 @@ fetch('https://geolocation-db.com/json/')
   })
   .then(data => {
     if (data && data.country_code) {
-      switch (data.country_code) {
-        case 'ES':
-          amazonLink = 'https://www.amazon.es/';
-          break;
-        case 'FR':
-          amazonLink = 'https://www.amazon.fr/';
-          break;
-      }
+        updateCountryCode(data.country_code);
     }
-    console.log('Amazon Link:', amazonLink);
   })
   .catch(error => {
     console.log('Usando enlace por defecto:', amazonLink);
   });
+
+function updateCountryCode(code) {
+    countryCode = code;
+    console.log('Country Code:', countryCode);
+    updateAmazonLink(countryCode);
+}
+
+function updateAmazonLink(country) {
+    switch (country) {
+        case 'ES':
+            amazonLink = 'https://www.amazon.es/';
+            break;
+        case 'FR':
+            amazonLink = 'https://www.amazon.fr/';
+            break;
+        case 'US':
+            amazonLink = 'https://www.amazon.com/';
+            break;
+        default:
+            amazonLink = 'https://www.amazon.com/';
+            break;
+    }
+    console.log('Amazon Link:', amazonLink);
+}
 
 async function fetchFileContent(url) {
     const response = await fetch(url);
