@@ -90,6 +90,9 @@ function generateProductHTML(product) {
             <p>${product.Description}</p>
         </div>
     `;
+    productDiv.addEventListener('click', () => {
+        window.open(product.ProductURL, '_blank');
+    });
     return productDiv;
 }
 
