@@ -97,15 +97,30 @@ function generateProductHTML(product) {
 function displayProducts(products) {
     const container = document.getElementById('product-container');
     container.innerHTML = '';
-    products.forEach(product => {
-        var activationDate = null;
-        if(product.Enabled != null && product.Enabled !== ""){
-            activationDate = new Date(product.Enabled.split('/').reverse().join('-'));
+    const enabledProducts = products.filter(product => {
+        if (!product.Enabled) return false;
+        const activationDate = new Date(product.Enabled.split('/').reverse().join('-'));
+        return activationDate <= new Date();
+    });
+    const sections = {};
+    enabledProducts.forEach(product => {
+        const section = product.Section || 'Sin sección';
+        if (!sections[section]) {
+            sections[section] = [];
         }
-        if(activationDate != null && activationDate <= new Date()){
+        sections[section].push(product);
+    });
+    Object.keys(sections).forEach(sectionName => {
+        const sectionTitle = document.createElement('h2');
+        sectionTitle.textContent = sectionName;
+        container.appendChild(sectionTitle);
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'products-section';
+        sections[sectionName].forEach(product => {
             const productDiv = generateProductHTML(product);
-            container.appendChild(productDiv);
-        }
+            sectionDiv.appendChild(productDiv);
+        });
+        container.appendChild(sectionDiv);
     });
 }
 
