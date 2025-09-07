@@ -6,20 +6,28 @@ var products = [];
 var amazonLink = 'https://www.amazon.com/';
 
 fetch('https://ipapi.co/json/')
-  .then(res => res.json())
-  .then(data => {
-    console.log(data.country);
-    switch (data.country) {
-        case 'ES':
-            amazonLink = 'https://www.amazon.es/';
-            break;
-        case 'FR':
-            amazonLink = 'https://www.amazon.fr/';
-            break;
-        default:
-            amazonLink = 'https://www.amazon.com/';
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`Error en la respuesta: ${res.status}`);
     }
-});
+    return res.json();
+  })
+  .then(data => {
+    if (data && data.country) {
+      switch (data.country) {
+        case 'ES':
+          amazonLink = 'https://www.amazon.es/';
+          break;
+        case 'FR':
+          amazonLink = 'https://www.amazon.fr/';
+          break;
+      }
+    }
+    console.log('Amazon Link:', amazonLink);
+  })
+  .catch(error => {
+    console.log('Usando enlace por defecto:', amazonLink);
+  });
 
 async function fetchFileContent(url) {
     const response = await fetch(url);
