@@ -5,7 +5,7 @@ var products = [];
 
 var amazonLink = 'https://www.amazon.com/';
 
-fetch('https://ipapi.co/json/')
+fetch('https://geolocation-db.com/json/')
   .then(res => {
     if (!res.ok) {
       throw new Error(`Error en la respuesta: ${res.status}`);
@@ -13,8 +13,8 @@ fetch('https://ipapi.co/json/')
     return res.json();
   })
   .then(data => {
-    if (data && data.country) {
-      switch (data.country) {
+    if (data && data.country_code) {
+      switch (data.country_code) {
         case 'ES':
           amazonLink = 'https://www.amazon.es/';
           break;
