@@ -125,6 +125,7 @@ function generateProductHTML(product) {
         </div>
         <div class="product-info">
             <h2>${product.Name}</h2>
+            <h4>${product.Resume}</h4>
             <p>${product.Description.replace(/\n/g, '<br>')}</p>
         </div>
     `;

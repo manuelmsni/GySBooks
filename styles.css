@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Henny+Penny&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Englebert&family=Henny+Penny&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Englebert&family=Henny+Penny&display=swap&family=Dynalight&display=swap');
 
 #product-container{
     display: block;
@@ -11,6 +10,13 @@ h2 {
     margin: 0 0 10px;
     font-family: 'Henny Penny', cursive;
     font-size: 24px;
+    border-bottom: 1px solid gray;
+}
+
+h3 {
+    margin: 0 0 10px;
+    font-family: "Dynalight", cursive;
+    font-size: 20px;
     border-bottom: 1px solid gray;
 }
 
