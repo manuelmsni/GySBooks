@@ -166,4 +166,38 @@ function displayProducts(products) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', loadProducts);
+async function loadMenu(){
+    const menuOptions = await fetchGoogleSheetsCSVAsJson(sheetId, 2055755589);
+    menuOptions.sort((a, b) => a.Order - b.Order);
+    const navContainer = document.getElementById('nav-container');
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('menu');
+    menu.innerHTML = '';
+    menuOptions.forEach(option => {
+        const menuItem = document.createElement('a');
+        menuItem.href = option.Link;
+        menuItem.textContent = option.Text;
+        menu.appendChild(menuItem);
+    });
+    if(!menuOptions || menuOptions.length === 0){
+        toggle.style.display = 'none';
+        menu.style.display = 'none';
+        return;
+    }
+    else
+    {
+        toggle.addEventListener('click', () => {
+            navContainer.classList.toggle('active');
+            menu.classList.toggle('active');
+            toggle.classList.toggle('active');
+        });
+    }
+}
+
+function render(){
+    loadMenu();
+    loadProducts();
+}
+
+document.addEventListener('DOMContentLoaded', render());
+

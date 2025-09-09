@@ -1,5 +1,145 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Englebert&family=Henny+Penny&display=swap&family=Dynalight&display=swap');
 
+body{
+    margin: 0;
+    padding: 0;
+}
+
+/********************
+      NAVIGATION
+*********************/
+
+nav {
+    top: 0;
+    min-height: 3rem;
+    position: sticky;
+    background: #4e4e4e;
+    color: white;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+}
+
+#nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    transition: all 0.3s ease;
+    height: 100%;
+    width: 100%;
+}
+
+.nav-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+}
+
+nav li {
+    text-align: center;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    padding: 0.1rem;
+    transition: background 0.3s;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+nav a:hover {
+    border-bottom: 2px solid #b9b9b9;
+    transform: skew(-10deg);
+}
+
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    background: white;
+    height: 3px;
+    width: 25px;
+    margin: 4px 0;
+    transition: 0.4s;
+    border-radius: 5px;
+}
+
+.menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(11px, 10px);
+}
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+.menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+@media (max-width: 768px) {
+
+    #nav-container {
+        flex-direction: column;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        height: 0;
+        width: 0;
+        padding: 0;
+        opacity: 0;
+        margin: 0;
+        transition: all 0.4s ease;
+    }
+
+    nav ul.active {
+        height: auto;
+        opacity: 1;
+        width: 100%;
+        margin-top: .5rem;
+        padding-top: .5rem;
+    }
+
+    nav ul.active a {
+        border-top: 1px solid transparent;
+        padding: .5rem 0;
+        transition: all 0.3s ease;
+    }
+    nav ul.active a:hover {
+        border-bottom: 2px solid transparent;
+        padding-left: .5rem;
+    }
+
+
+    .menu-toggle {
+        display: flex;
+    }
+}
+
+
+/********************
+       PRODUCTS
+*********************/
+
+
 #product-container{
     display: block;
     padding: 1rem;
@@ -33,7 +173,7 @@ h3 {
 
 .product {
     position: relative;
-    max-width: 500px;
+    max-width: 400px;
     overflow: hidden;
     cursor: pointer;
 }
