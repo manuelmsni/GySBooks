@@ -22,6 +22,7 @@ nav {
     display: flex;
     align-items: center;
     width: 100%;
+    box-sizing: border-box;
 }
 
 #nav-container {
@@ -32,6 +33,7 @@ nav {
     transition: all 0.3s ease;
     height: 100%;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .nav-top {
@@ -39,6 +41,7 @@ nav {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .logo {
@@ -50,11 +53,10 @@ nav {
 nav ul {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 1rem 0;
     display: flex;
     gap: 1rem;
-    padding-right: 1rem;
-    padding-left: 1rem;
+    box-sizing: border-box;
 }
 
 nav li {
@@ -104,6 +106,10 @@ nav a:hover {
     #nav-container {
         flex-direction: column;
     }
+
+    #nav-container.active {
+        padding-top: .6rem;
+    }
     
     nav ul {
         flex-direction: column;
@@ -119,20 +125,16 @@ nav a:hover {
         height: auto;
         opacity: 1;
         width: 100%;
-        margin-top: .5rem;
-        padding-top: .5rem;
+        padding: 1rem 0;
     }
 
     nav ul.active a {
-        border-top: 1px solid transparent;
-        padding: .5rem 0;
+        padding: .5rem .5rem;
         transition: all 0.3s ease;
     }
     nav ul.active a:hover {
-        border-bottom: 2px solid transparent;
         padding-left: .5rem;
     }
-
 
     .menu-toggle {
         display: flex;
