@@ -53,7 +53,7 @@ nav {
 nav ul {
     list-style: none;
     margin: 0;
-    padding: 1rem 0;
+    padding: 0 1rem;
     display: flex;
     gap: 1rem;
     box-sizing: border-box;
@@ -129,7 +129,7 @@ nav a:hover {
     }
 
     nav ul.active a {
-        padding: .5rem .5rem;
+        padding: 0 .5rem;
         transition: all 0.3s ease;
     }
     nav ul.active a:hover {
