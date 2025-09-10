@@ -14,25 +14,25 @@ body{
 
 nav {
     top: 0;
-    min-height: 3rem;
-    position: sticky;
+    padding: .5rem 1rem;
+    position: fixed;
     background: #4e4e4e;
     color: white;
     z-index: 1000;
-    display: flex;
-    align-items: center;
     width: 100%;
     box-sizing: border-box;
+    height: fit-content;
 }
+
+
 
 #nav-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 1rem;
     transition: all 0.3s ease;
     height: 100%;
     width: 100%;
+    max-height: 2rem;
+    overflow: hidden;
     box-sizing: border-box;
 }
 
@@ -53,10 +53,9 @@ nav {
 nav ul {
     list-style: none;
     margin: 0;
-    padding: 0 1rem;
+    padding: 0;
     display: flex;
     gap: 1rem;
-    box-sizing: border-box;
 }
 
 nav li {
@@ -105,33 +104,34 @@ nav a:hover {
 
     #nav-container {
         flex-direction: column;
-    }
-
-    #nav-container.active {
-        padding-top: .6rem;
+        transition: all 0.4s ease;
+        max-height: none;
     }
     
     nav ul {
         flex-direction: column;
-        height: 0;
-        width: 0;
-        padding: 0;
-        opacity: 0;
         margin: 0;
-        transition: all 0.4s ease;
+        padding: 0;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        transition: height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease;
     }
 
     nav ul.active {
+        margin-top: 1rem;
+        height: auto;
+        width: 100%;
+        opacity: 1;
+    }
+
+    nav ul.active {
+        margin-top: 1rem;
         height: auto;
         opacity: 1;
         width: 100%;
-        padding: 1rem 0;
     }
 
-    nav ul.active a {
-        padding: 0 .5rem;
-        transition: all 0.3s ease;
-    }
     nav ul.active a:hover {
         padding-left: .5rem;
     }

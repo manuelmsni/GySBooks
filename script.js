@@ -188,8 +188,8 @@ async function loadMenu(){
     {
         toggle.addEventListener('click', () => {
             navContainer.classList.toggle('active');
-            menu.classList.toggle('active');
             toggle.classList.toggle('active');
+            menu.classList.toggle('active');
         });
     }
 }
