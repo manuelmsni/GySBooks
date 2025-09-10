@@ -15,7 +15,7 @@ body{
 nav {
     top: 0;
     padding: .5rem 1rem;
-    position: fixed;
+    position: sticky;
     background: #4e4e4e;
     color: white;
     z-index: 1000;
@@ -125,13 +125,7 @@ nav a:hover {
         height: auto;
         width: 100%;
         opacity: 1;
-    }
-
-    nav ul.active {
-        margin-top: 1rem;
-        height: auto;
-        opacity: 1;
-        width: 100%;
+        margin-bottom: .5rem;
     }
 
     nav ul.active a:hover {

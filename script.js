@@ -155,6 +155,7 @@ function displayProducts(products) {
     Object.keys(sections).forEach(sectionName => {
         const sectionTitle = document.createElement('h2');
         sectionTitle.textContent = sectionName;
+        sectionTitle.id = normalizeId(sectionName);
         container.appendChild(sectionTitle);
         const sectionDiv = document.createElement('div');
         sectionDiv.className = 'products-section';
@@ -164,6 +165,10 @@ function displayProducts(products) {
         });
         container.appendChild(sectionDiv);
     });
+}
+
+function normalizeId(text) {
+    return text.toLowerCase().replace(/\s+/g, '-');
 }
 
 async function loadMenu(){
@@ -176,8 +181,23 @@ async function loadMenu(){
     menuOptions.forEach(option => {
         const menuItem = document.createElement('a');
         menuItem.href = option.Link;
+        if(option.Link.startsWith('http')){
+            menuItem.target = '_blank';
+            menuItem.rel = 'noopener noreferrer';
+        }
+        else
+        {
+            menuItem.href = '#' + normalizeId(option.Link);
+        }
         menuItem.textContent = option.Text;
         menu.appendChild(menuItem);
+        menuItem.addEventListener('click', () => {
+            if(navContainer.classList.contains('active')){
+                navContainer.classList.remove('active');
+                toggle.classList.remove('active');
+                menu.classList.remove('active');
+            }
+        });
     });
     if(!menuOptions || menuOptions.length === 0){
         toggle.style.display = 'none';
