@@ -160,7 +160,7 @@ function generateProductHTML(product) {
         </div>
     `;
     productDiv.addEventListener('click', () => {
-        link = product.ProductURL.startsWith('http') ? product.ProductURL : ('https://' + amazonLink + '/' + product.ProductURL);
+        link = 'https://' + amazonLink + '/dp/' + product.ID;
         window.open(link, '_blank');
     });
     return productDiv;
