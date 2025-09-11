@@ -89,6 +89,7 @@ nav a {
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
     font-family: 'Englebert';
+    cursor: pointer;
 }
 nav a:hover {
     border-bottom: 2px solid #b9b9b9;
