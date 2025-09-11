@@ -49,6 +49,25 @@ nav {
     font-family: 'Englebert';
 }
 
+#country-picker {
+    background: transparent;
+    border: none;
+    padding: 0 0 0 .5rem;
+    color: white;
+    cursor: pointer;
+}
+
+#country-picker:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+#country-picker option {
+    background-color: #4e4e4e; 
+    color: white;
+    cursor: pointer;
+}
+
 nav ul {
     list-style: none;
     margin: 0;

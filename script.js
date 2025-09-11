@@ -1,46 +1,77 @@
 const sheetId = "1UMHM7iYsX5vafyNO-WTmMki4M9L_AiohXvUr_7a7dAI";
+var menuOptions = [];
 var products = [];
-var countryCode = 'US';
-var amazonLink = 'https://www.amazon.com/';
+var countries = [];
+var countryCode;
+var amazonLink;
 
-fetch('https://geolocation-db.com/json/')
-  .then(res => {
-    if (!res.ok) {
-      throw new Error(`Error en la respuesta: ${res.status}`);
+function getUrlParams() {
+  const queryString = window.location.search;
+  const params = new URLSearchParams(queryString);
+  const result = {};
+  for (const [key, value] of params.entries()) {
+    if (result[key]) {
+      if (Array.isArray(result[key])) {
+        result[key].push(value);
+      } else {
+        result[key] = [result[key], value];
+      }
+    } else {
+      result[key] = value;
     }
-    return res.json();
-  })
-  .then(data => {
-    if (data && data.country_code) {
-        updateCountryCode(data.country_code);
-    }
-  })
-  .catch(error => {
-    console.log('Usando enlace por defecto:', amazonLink);
-  });
-
-function updateCountryCode(code) {
-    countryCode = code;
-    console.log('Country Code:', countryCode);
-    updateAmazonLink(countryCode);
+  }
+  return result;
 }
 
-function updateAmazonLink(country) {
-    switch (country) {
-        case 'ES':
-            amazonLink = 'https://www.amazon.es/';
-            break;
-        case 'FR':
-            amazonLink = 'https://www.amazon.fr/';
-            break;
-        case 'US':
-            amazonLink = 'https://www.amazon.com/';
-            break;
-        default:
-            amazonLink = 'https://www.amazon.com/';
-            break;
+function setParam(key, value, concat = false) {
+  const urlObj = new URL(window.location.href);
+  const params = urlObj.searchParams;
+  if (concat && params.has(key)) {
+    params.append(key, value);
+  } else {
+    params.set(key, value);
+  }
+  urlObj.search = params.toString();
+  window.history.pushState({}, '', urlObj.toString());
+  return urlObj.toString();
+}
+
+async function detectCountryCode() {
+    try {
+        const response = await fetch('https://geolocation-db.com/json/');
+        const data = await response.json();
+        if (data && data.country_code) {
+            return data.country_code;
+        } else {
+            throw new Error('No se pudo obtener el código de país');
+        }
+    } catch (error) {
+        console.error('Error al obtener el código de país:', error);
+        return 'US';
     }
-    console.log('Amazon Link:', amazonLink);
+}
+
+function replaceAmazonPlaceholder(link){
+    const placeHolder = '{$amazon}';
+    if(link.includes(placeHolder)){
+        return link.replace(placeHolder, amazonLink);
+    }
+    return link;
+}
+
+function updateCountryCode(code) {
+    for (const c of countries) {
+        if (c.Code === code) {
+            amazonLink = c.Market;
+            countryCode = c.Code;
+            break;
+        }
+    }
+    if (!amazonLink) {
+        amazonLink = 'www.amazon.com';
+        countryCode = 'US';
+    }
+    setParam('country', countryCode);
 }
 
 async function fetchFileContent(url) {
@@ -110,7 +141,6 @@ async function fetchGoogleSheetsCSVAsJson(sheetId, sheetGID = 0) {
 }
 
 async function loadProducts() {
-    products = await fetchGoogleSheetsCSVAsJson(sheetId, 0);
     products.sort((a, b) => a.Order - b.Order);
     console.log(products);
     displayProducts(products);
@@ -130,7 +160,7 @@ function generateProductHTML(product) {
         </div>
     `;
     productDiv.addEventListener('click', () => {
-        link = product.ProductURL.startsWith('http') ? product.ProductURL : amazonLink + product.ProductURL;
+        link = product.ProductURL.startsWith('http') ? product.ProductURL : ('https://' + amazonLink + '/' + product.ProductURL);
         window.open(link, '_blank');
     });
     return productDiv;
@@ -172,16 +202,30 @@ function normalizeId(text) {
 }
 
 async function loadMenu(){
-    const menuOptions = await fetchGoogleSheetsCSVAsJson(sheetId, 2055755589);
     menuOptions.sort((a, b) => a.Order - b.Order);
     const navContainer = document.getElementById('nav-container');
     const toggle = document.getElementById('menu-toggle');
     const menu = document.getElementById('menu');
+    const countryPicker = document.getElementById('country-picker');
+    countries.sort((a, b) => a.Name.localeCompare(b.Name));
+    countryPicker.innerHTML = '';
+    countries.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.Code;
+        option.textContent = c.Flag ? c.Flag : c.Code;
+        if(c.Code === countryCode){
+            option.selected = true;
+        }
+        countryPicker.appendChild(option);
+    });
+    countryPicker.addEventListener('change', (e) => {
+        updateCountryCode(e.target.value);
+    });
     menu.innerHTML = '';
     menuOptions.forEach(option => {
         const menuItem = document.createElement('a');
-        menuItem.href = option.Link;
         if(option.Link.startsWith('http')){
+            menuItem.href = replaceAmazonPlaceholder(option.Link);
             menuItem.target = '_blank';
             menuItem.rel = 'noopener noreferrer';
         }
@@ -214,7 +258,26 @@ async function loadMenu(){
     }
 }
 
-function render(){
+async function loadDatabase() {
+    const [c, m, p] = await Promise.all([
+        fetchGoogleSheetsCSVAsJson(sheetId, 1997883613),
+        fetchGoogleSheetsCSVAsJson(sheetId, 2055755589),
+        fetchGoogleSheetsCSVAsJson(sheetId, 0)
+    ]);
+    countries = c;
+    menuOptions = m;
+    products = p;
+}
+
+async function render(){
+    const params = getUrlParams();
+    await loadDatabase();
+    if(params.country){
+        updateCountryCode(params.country.toUpperCase());
+    }
+    else {
+        detectCountryCode().then(code => updateCountryCode(code));
+    }
     loadMenu();
     loadProducts();
 }
