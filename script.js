@@ -224,18 +224,19 @@ async function loadMenu(){
     menu.innerHTML = '';
     menuOptions.forEach(option => {
         const menuItem = document.createElement('a');
-        if(option.Link.startsWith('http')){
-            menuItem.href = replaceAmazonPlaceholder(option.Link);
-            menuItem.target = '_blank';
-            menuItem.rel = 'noopener noreferrer';
-        }
-        else
-        {
-            menuItem.href = '#' + normalizeId(option.Link);
-        }
         menuItem.textContent = option.Text;
         menu.appendChild(menuItem);
-        menuItem.addEventListener('click', () => {
+
+        menuItem.addEventListener('click', (e) => {
+            if(option.Link.startsWith('http')){
+                e.preventDefault(); // evitamos la navegación por href fijo
+                const updatedLink = replaceAmazonPlaceholder(option.Link);
+                window.open(updatedLink, '_blank');
+            } else {
+                const targetId = normalizeId(option.Link);
+                document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+            }
+
             if(navContainer.classList.contains('active')){
                 navContainer.classList.remove('active');
                 toggle.classList.remove('active');
