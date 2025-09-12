@@ -224,7 +224,7 @@ async function loadMenu(){
         const option = document.createElement('option');
         option.value = c.Code;
         option.textContent = c.Flag ? c.Flag : c.Code;
-        if(c.Code === countryCode){
+        if(c.Code.toUpperCase().trim() === countryCode.toUpperCase().trim()){
             option.selected = true;
         }
         countryPicker.appendChild(option);
