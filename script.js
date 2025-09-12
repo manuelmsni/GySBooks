@@ -38,18 +38,18 @@ function setParam(key, value, concat = false) {
 }
 
 async function detectCountryCode() {
+    var countryCode = 'US';
     try {
         const response = await fetch('https://geolocation-db.com/json/');
         const data = await response.json();
         if (data && data.country_code) {
-            return data.country_code;
-        } else {
-            throw new Error('No se pudo obtener el código de país');
+            countryCode = data.country_code;
         }
     } catch (error) {
-        console.error('Error al obtener el código de país:', error);
-        return 'US';
+        console.error('Error al obtener el código de país.', error);
     }
+    console.log('Using country code:', countryCode);
+    return countryCode;
 }
 
 function replaceAmazonPlaceholder(link){
@@ -156,7 +156,7 @@ function generateProductHTML(product) {
         </div>
         <div class="product-info">
             <h2>${product.Name}</h2>
-            <p class="center"><a class="product-link" href="https://${amazonLink}/dp/${product.ID}" target="_blank">Comprar en Amazon 🛒</a></p>
+            <p class="center"><a class="product-link" href="https://${amazonLink}/dp/${product.ID}" target="_blank">Buy on Amazon 🛒</a></p>
             <h3>${product.Resume}</h3>
             <p>${product.Description.replace(/\n/g, '<br>')}</p>
         </div>
