@@ -156,7 +156,7 @@ function generateProductHTML(product) {
         </div>
         <div class="product-info">
             <h2>${product.Name}</h2>
-            <p class="center"><a class="product-link" href="https://${amazonLink}/dp/${product.ID}" target="_blank">Comprar en Amazon</a></p>
+            <p class="center"><a class="product-link" href="https://${amazonLink}/dp/${product.ID}" target="_blank">Comprar en Amazon 🛒</a></p>
             <h3>${product.Resume}</h3>
             <p>${product.Description.replace(/\n/g, '<br>')}</p>
         </div>
