@@ -292,7 +292,8 @@ async function render(){
         updateCountryCode(params.country.toUpperCase());
     }
     else {
-        detectCountryCode().then(code => updateCountryCode(code));
+        var countryCode = await detectCountryCode();
+        updateCountryCode(countryCode);
     }
     loadMenu();
     loadProducts();
