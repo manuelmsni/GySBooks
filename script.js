@@ -2,6 +2,7 @@ const sheetId = "1UMHM7iYsX5vafyNO-WTmMki4M9L_AiohXvUr_7a7dAI";
 var menuOptions = [];
 var products = [];
 var countries = [];
+var productLinks = [];
 var countryCode;
 var amazonLink;
 
@@ -72,6 +73,7 @@ function updateCountryCode(code) {
         countryCode = 'US';
     }
     setParam('country', countryCode);
+    refreshProductLinks();
 }
 
 async function fetchFileContent(url) {
@@ -141,7 +143,6 @@ async function fetchGoogleSheetsCSVAsJson(sheetId, sheetGID = 0) {
 }
 
 async function loadProducts() {
-    products.sort((a, b) => a.Order - b.Order);
     console.log(products);
     displayProducts(products);
 }
@@ -155,16 +156,22 @@ function generateProductHTML(product) {
         </div>
         <div class="product-info">
             <h2>${product.Name}</h2>
-            <h4>${product.Resume}</h4>
+            <p class="center"><a class="product-link" href="https://${amazonLink}/dp/${product.ID}" target="_blank">Comprar en Amazon</a></p>
+            <h3>${product.Resume}</h3>
             <p>${product.Description.replace(/\n/g, '<br>')}</p>
         </div>
     `;
-    productDiv.addEventListener('click', () => {
-        link = 'https://' + amazonLink + '/dp/' + product.ID;
-        window.open(link, '_blank');
-    });
+    const link = productDiv.querySelector('.product-link');
+    productLinks.push({ link: link, product: product });
     return productDiv;
 }
+
+function refreshProductLinks() {
+    productLinks.forEach(item => {
+        item.link.href = `https://${amazonLink}/dp/${item.product.ID}`;
+    });
+}
+
 
 function displayProducts(products) {
     const container = document.getElementById('product-container');
@@ -202,14 +209,18 @@ function normalizeId(text) {
 }
 
 async function loadMenu(){
-    menuOptions.sort((a, b) => a.Order - b.Order);
     const navContainer = document.getElementById('nav-container');
     const toggle = document.getElementById('menu-toggle');
     const menu = document.getElementById('menu');
     const countryPicker = document.getElementById('country-picker');
-    countries.sort((a, b) => a.Name.localeCompare(b.Name));
+    countries.sort((a, b) => a.Code.localeCompare(b.Code));
     countryPicker.innerHTML = '';
-    countries.forEach(c => {
+    var enabledCountries = countries.filter(country => {
+        if (!country.Enabled) return false;
+        const activationDate = new Date(country.Enabled.split('/').reverse().join('-'));
+        return activationDate <= new Date();
+    });
+    enabledCountries.forEach(c => {
         const option = document.createElement('option');
         option.value = c.Code;
         option.textContent = c.Flag ? c.Flag : c.Code;
@@ -222,14 +233,18 @@ async function loadMenu(){
         updateCountryCode(e.target.value);
     });
     menu.innerHTML = '';
-    menuOptions.forEach(option => {
+    var enabledMenuOptions = menuOptions.filter(option => {
+        if (!option.Enabled) return false;
+        const activationDate = new Date(option.Enabled.split('/').reverse().join('-'));
+        return activationDate <= new Date();
+    });
+    enabledMenuOptions.forEach(option => {
         const menuItem = document.createElement('a');
         menuItem.textContent = option.Text;
         menu.appendChild(menuItem);
-
         menuItem.addEventListener('click', (e) => {
             if(option.Link.startsWith('http')){
-                e.preventDefault(); // evitamos la navegación por href fijo
+                e.preventDefault();
                 const updatedLink = replaceAmazonPlaceholder(option.Link);
                 window.open(updatedLink, '_blank');
             } else {
