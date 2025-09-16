@@ -86,6 +86,7 @@ nav a {
     transition: all 0.3s ease;
     font-family: 'Englebert';
     cursor: pointer;
+    text-wrap-mode: nowrap;
 }
 nav a:hover {
     border-bottom: 2px solid #b9b9b9;

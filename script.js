@@ -222,6 +222,7 @@ function createImageHTML(img, product) {
 
 function generateProductSection(product) {
     const productSection = document.createElement('section');
+    productSection.id = normalizeId(product.Name);
     productSection.className = 'product-section';
     const h2 = document.createElement('h2');
     h2.textContent = product.Name;
