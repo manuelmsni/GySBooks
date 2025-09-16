@@ -1,7 +1,17 @@
 const sheetId = "1UMHM7iYsX5vafyNO-WTmMki4M9L_AiohXvUr_7a7dAI";
+
+const productsPage = 0;
+const menuOptionsPage = 2055755589;
+const countriesPage = 1997883613;
+const imagesPage = 202455128;
+const fontsPage = 902677663;
+
+var fonts = [];
 var menuOptions = [];
 var products = [];
 var countries = [];
+var productsImages = [];
+
 var productLinks = [];
 var countryCode;
 var amazonLink;
@@ -35,6 +45,18 @@ function setParam(key, value, concat = false) {
   urlObj.search = params.toString();
   window.history.pushState({}, '', urlObj.toString());
   return urlObj.toString();
+}
+
+function loadGoogleFonts() {
+  const baseUrl = "https://fonts.googleapis.com/css2?";
+  const query = fonts
+    .map(f => "family=" + encodeURIComponent(f.Name))
+    .join("&");
+  const url = `${baseUrl}${query}&display=swap`;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = url;
+  document.head.appendChild(link);
 }
 
 async function detectCountryCode() {
@@ -147,23 +169,117 @@ async function loadProducts() {
     displayProducts(products);
 }
 
-function generateProductHTML(product) {
-    const productDiv = document.createElement('div');
-    productDiv.className = 'product';
-    productDiv.innerHTML = `
-        <div class="product-image">
-            <img src="${product.ImageURL}" alt="${product.Name}">
-        </div>
-        <div class="product-info">
-            <h2>${product.Name}</h2>
-            <p class="center"><a class="product-link" href="https://${amazonLink}/dp/${product.ID}" target="_blank">Buy on Amazon 🛒</a></p>
-            <h3>${product.Resume}</h3>
-            <p>${product.Description.replace(/\n/g, '<br>')}</p>
-        </div>
-    `;
-    const link = productDiv.querySelector('.product-link');
-    productLinks.push({ link: link, product: product });
-    return productDiv;
+function parseDropShadow(value, color = '#000000') {
+    const parts = value.split('/').map(Number);
+    const [x = 0, y = 0, blur = 0, alpha = 1, intensity = 1] = parts;
+    let r = 0, g = 0, b = 0;
+    if (color.startsWith('#') && color.length === 7) {
+        r = parseInt(color.slice(1, 3), 16);
+        g = parseInt(color.slice(3, 5), 16);
+        b = parseInt(color.slice(5, 7), 16);
+    }
+    const shadows = [];
+    const fullShadowsCount = Math.floor(intensity);
+    for (let i = 0; i < fullShadowsCount; i++) {
+        shadows.push(`drop-shadow(${x}px ${y}px ${blur}px rgba(${r},${g},${b},${alpha}))`);
+    }
+    const extra = intensity - fullShadowsCount;
+    if (extra > 0) {
+        shadows.push(`drop-shadow(${x}px ${y}px ${blur}px rgba(${r},${g},${b},${alpha * extra}))`);
+    }
+    return shadows.join(' ');
+}
+
+function createImageHTML(img, product) {
+    let transformValues = [];
+    if (img.Rotate) transformValues.push(`rotateZ(${img.Rotate}deg)`);
+    if (img.ShiftVertical) transformValues.push(`translateY(${img.ShiftVertical}px)`);
+    if (img.ShiftHorizontal) transformValues.push(`translateX(${img.ShiftHorizontal}px)`);
+
+    let styleParts = [];
+    if (transformValues.length) styleParts.push(`transform: ${transformValues.join(' ')};`);
+
+    if (img.Shadow) {
+        const dropShadow = parseDropShadow(img.Shadow, img.ShadowColor);
+        styleParts.push(`filter: ${dropShadow};`);
+    }
+
+    const transformStyle = styleParts.length ? ` style="${styleParts.join(' ')}"` : '';
+
+    const defaultSrc = img.Image.replace(/\\/g, '/');
+    const hoverSrc = img.ImageHover ? img.ImageHover.replace(/\\/g, '/') : null;
+
+    return hoverSrc
+        ? `<div class="product-image">
+                <img class="default"${transformStyle} src="${defaultSrc}" alt="${product.Name}">
+                <img class="hover"${transformStyle} src="${hoverSrc}" alt="${product.Name}">
+           </div>`
+        : `<div class="product-image">
+                <img${transformStyle} src="${defaultSrc}" alt="${product.Name}">
+           </div>`;
+}
+
+
+function generateProductSection(product) {
+    const productSection = document.createElement('section');
+    productSection.className = 'product-section';
+    const h2 = document.createElement('h2');
+    h2.textContent = product.Name;
+    h2.style.fontFamily = product.NameFont ? `'${product.NameFont}', sans-serif` : 'sans-serif';
+    if (product.NameSize) {
+        if (product.NameFont) {
+            document.fonts.load(`1em '${product.NameFont}'`).then(() => {
+                h2.style.fontSize = `${product.NameSize}px`;
+            }).catch(() => {
+                h2.style.fontSize = '';
+            });
+        } else {
+            h2.style.fontSize = `${product.NameSize}px`;
+        }
+    }
+    const productInfo = document.createElement('div');
+    productInfo.className = 'product-info';
+    productInfo.appendChild(h2);
+    if (product.Resume) {
+        const resume = document.createElement('p');
+        resume.innerHTML = product.Resume.replace(/\n/g, '<br>');
+        if (product.ResumeFont) {
+            resume.style.fontFamily = `'${product.ResumeFont}', sans-serif`;
+        }
+        if (product.ResumeSize) {
+            if (product.ResumeFont) {
+                document.fonts.load(`1em '${product.ResumeFont}'`).then(() => {
+                    resume.style.fontSize = `${product.ResumeSize}px`;
+                }).catch(() => {
+                    resume.style.fontSize = '';
+                });
+            } else {
+                resume.style.fontSize = `${product.ResumeSize}px`;
+            }
+        }
+        productInfo.appendChild(resume);
+    }
+    if(product.ID){
+        const link = document.createElement('a');
+        link.className = 'product-link';
+        link.href = `https://${amazonLink}/dp/${product.ID}`;
+        link.target = '_blank';
+        link.textContent = 'Buy on Amazon 🛒';
+        productLinks.push({ link: link, product: product });
+        const pLink = document.createElement('p');
+        pLink.className = 'center';
+        pLink.appendChild(link);
+        productInfo.appendChild(pLink);
+    }
+    const productImagesDiv = document.createElement('div');
+    productImagesDiv.className = 'product-images';
+    productImagesDiv.innerHTML = product.Images.map(img => createImageHTML(img, product)).join('');
+    const innerSection = document.createElement('div');
+    innerSection.className = 'inner-section';
+    innerSection.appendChild(productInfo);
+    innerSection.appendChild(productImagesDiv);
+    productSection.appendChild(innerSection);
+    return productSection;
 }
 
 function refreshProductLinks() {
@@ -174,34 +290,12 @@ function refreshProductLinks() {
 
 
 function displayProducts(products) {
-    const container = document.getElementById('product-container');
-    container.innerHTML = '';
-    const enabledProducts = products.filter(product => {
-        if (!product.Enabled) return false;
-        const activationDate = new Date(product.Enabled.split('/').reverse().join('-'));
-        return activationDate <= new Date();
+    const productSections = products.map(p => generateProductSection(p));
+    // add class even or odd to each section
+    productSections.forEach((section, index) => {
+        section.classList.add(index % 2 === 0 ? 'even' : 'odd');
     });
-    const sections = {};
-    enabledProducts.forEach(product => {
-        const section = product.Section || 'Sin sección';
-        if (!sections[section]) {
-            sections[section] = [];
-        }
-        sections[section].push(product);
-    });
-    Object.keys(sections).forEach(sectionName => {
-        const sectionTitle = document.createElement('h2');
-        sectionTitle.textContent = sectionName;
-        sectionTitle.id = normalizeId(sectionName);
-        container.appendChild(sectionTitle);
-        const sectionDiv = document.createElement('div');
-        sectionDiv.className = 'products-section';
-        sections[sectionName].forEach(product => {
-            const productDiv = generateProductHTML(product);
-            sectionDiv.appendChild(productDiv);
-        });
-        container.appendChild(sectionDiv);
-    });
+    document.body.append(...productSections);
 }
 
 function normalizeId(text) {
@@ -215,12 +309,7 @@ async function loadMenu(){
     const countryPicker = document.getElementById('country-picker');
     countries.sort((a, b) => a.Code.localeCompare(b.Code));
     countryPicker.innerHTML = '';
-    var enabledCountries = countries.filter(country => {
-        if (!country.Enabled) return false;
-        const activationDate = new Date(country.Enabled.split('/').reverse().join('-'));
-        return activationDate <= new Date();
-    });
-    enabledCountries.forEach(c => {
+    countries.forEach(c => {
         const option = document.createElement('option');
         option.value = c.Code;
         option.textContent = c.Flag ? c.Flag : c.Code;
@@ -233,12 +322,7 @@ async function loadMenu(){
         updateCountryCode(e.target.value);
     });
     menu.innerHTML = '';
-    var enabledMenuOptions = menuOptions.filter(option => {
-        if (!option.Enabled) return false;
-        const activationDate = new Date(option.Enabled.split('/').reverse().join('-'));
-        return activationDate <= new Date();
-    });
-    enabledMenuOptions.forEach(option => {
+    menuOptions.forEach(option => {
         const menuItem = document.createElement('a');
         menuItem.textContent = option.Text;
         menu.appendChild(menuItem);
@@ -274,20 +358,39 @@ async function loadMenu(){
     }
 }
 
+function filterNotEnabled(items) {
+    return items.filter(item => {
+        if (!item.Enabled) return false;
+        const activationDate = new Date(item.Enabled.split('/').reverse().join('-'));
+        return activationDate <= new Date();
+    });
+}
+
 async function loadDatabase() {
-    const [c, m, p] = await Promise.all([
-        fetchGoogleSheetsCSVAsJson(sheetId, 1997883613),
-        fetchGoogleSheetsCSVAsJson(sheetId, 2055755589),
-        fetchGoogleSheetsCSVAsJson(sheetId, 0)
+    const [c, m, p, i, f] = await Promise.all([
+        fetchGoogleSheetsCSVAsJson(sheetId, countriesPage),
+        fetchGoogleSheetsCSVAsJson(sheetId, menuOptionsPage),
+        fetchGoogleSheetsCSVAsJson(sheetId, 0),
+        fetchGoogleSheetsCSVAsJson(sheetId, imagesPage),
+        fetchGoogleSheetsCSVAsJson(sheetId, fontsPage)
     ]);
-    countries = c;
-    menuOptions = m;
-    products = p;
+    fonts = f;
+    countries = filterNotEnabled(c);
+    menuOptions = filterNotEnabled(m);
+    productsImages = filterNotEnabled(i);
+    products = filterNotEnabled(p);
+    products.forEach(product => {
+        const productImages = productsImages.filter(
+            img => img.ProductName.toLowerCase() === product.Name.toLowerCase()
+        );
+        product.Images = productImages;
+    });
 }
 
 async function render(){
     const params = getUrlParams();
     await loadDatabase();
+    loadGoogleFonts();
     if(params.country){
         updateCountryCode(params.country.toUpperCase());
     }
