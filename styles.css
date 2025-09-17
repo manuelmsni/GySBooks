@@ -4,6 +4,7 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
 }
 
 /********************
@@ -20,6 +21,7 @@ nav {
     width: 100%;
     box-sizing: border-box;
     height: fit-content;
+    margin-bottom: 3rem;
 }
 
 #nav-container {
@@ -168,13 +170,15 @@ nav a:hover {
     margin-bottom: 8rem;
 }
 
+
 .product-section.even {
     background-color: #f9f9f9;
 }
-
+/*
 .product-section.odd {
     background-color: #e0e0e0;
 }
+*/
 
 .inner-section {
     display: flex;
