@@ -227,6 +227,12 @@ nav a:hover {
     position: relative;
     display: inline-block;
     overflow: visible;
+    transition: transform 0.5s ease;
+}
+
+.product-image:hover {
+    z-index: 10;
+    transform: scale(1.05);
 }
 
 .product-image img {
