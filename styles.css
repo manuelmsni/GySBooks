@@ -333,6 +333,10 @@ nav a:hover {
     display: none !important;
 }
 
+.hideScroll::-webkit-scrollbar {
+    width: 0;
+}
+
 .triggerIMAGG{
     cursor: pointer;
 }
@@ -340,7 +344,7 @@ nav a:hover {
 #DivIMAGG{
     top: 0;
     left: 0;
-    position: sticky;
+    position: fixed;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none; 
