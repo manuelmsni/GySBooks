@@ -453,18 +453,25 @@ function openTriggersForIMAGG() {
     openTriggers.forEach(function (trigger) {
 
         trigger.addEventListener("click", function triggerIMGG() {
-            // Bloqueamos scroll usando position: fixed
+            // Bloquear scroll sin ocultar la barra
             const scrollY = window.scrollY;
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollY}px`;
             document.body.dataset.scrollY = scrollY;
+
+            // Evitar que el fondo se mueva y mantener barra visible
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            if (scrollbarWidth > 0) {
+                document.body.style.paddingRight = `${scrollbarWidth}px`;
+            }
+            document.body.style.position = 'relative';
+            document.body.style.overflow = 'hidden';
+            document.body.style.top = `-${scrollY}px`;
 
             // Configuración del modal
             const divIMAGG = document.getElementById("DivIMAGG");
             divIMAGG.style.overflowY = "scroll";
             document.getElementById("IMAGG").src = this.getAttribute("src");
             document.getElementById("TitleIMAGG").innerText = this.getAttribute("title");
-            
+
             const caption = document.getElementById("CaptionIMAGG");
             caption.innerHTML = ''; // Limpiamos caption
 
@@ -491,13 +498,15 @@ function openTriggersForIMAGG() {
             trigger.addEventListener("click", function (e) {
                 if (e.target !== this) return;
 
-                // Restauramos scroll
+                // Restaurar scroll y estilos del body
                 const scrollY = document.body.dataset.scrollY;
                 document.body.style.position = '';
                 document.body.style.top = '';
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
                 window.scrollTo(0, scrollY);
 
-                // Cerramos modal
+                // Cerrar modal
                 document.getElementById("DivIMAGG").classList.add('hidden');
             });
 
