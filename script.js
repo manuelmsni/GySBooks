@@ -211,11 +211,11 @@ function createImageHTML(img, product) {
 
     return hoverSrc
         ? `<div class="product-image">
-                <img class="default"${transformStyle} src="${defaultSrc}" alt="${product.Name}">
-                <img class="hover"${transformStyle} src="${hoverSrc}" alt="${product.Name}">
+                <img class="default triggerIMAGG"${transformStyle} src="${defaultSrc}" alt="${product.Name}">
+                <img class="hover triggerIMAGG"${transformStyle} src="${hoverSrc}" alt="${product.Name}">
            </div>`
         : `<div class="product-image">
-                <img${transformStyle} src="${defaultSrc}" alt="${product.Name}">
+                <img${transformStyle} src="${defaultSrc}" alt="${product.Name}" class="triggerIMAGG">
            </div>`;
 }
 
@@ -401,7 +401,110 @@ async function render(){
     }
     loadMenu();
     loadProducts();
+    modalWindowForIMAGG();
+    openTriggersForIMAGG();
 }
+
+
+function modalWindowForIMAGG() {
+    if(document.getElementById("DivIMAGG") === null){
+        var divIMAGG = document.createElement("div");
+        divIMAGG.id = "DivIMAGG";
+        divIMAGG.classList.add("hidden", "exitIMAGG");
+
+        var bodyIMAGG = document.createElement("div");
+        bodyIMAGG.id = "BodyIMAGG";
+
+        var exitIMAGG = document.createElement("a");
+        exitIMAGG.id = "ExitIMAGG";
+        exitIMAGG.innerHTML = "X";
+        exitIMAGG.classList.add("exitIMAGG");
+
+        var pExitIMAGG = document.createElement("p");
+        pExitIMAGG.appendChild(exitIMAGG);
+
+        var figure = document.createElement("figure");
+
+        var imgIMAGG = document.createElement("img");
+        imgIMAGG.id = "IMAGG";
+        imgIMAGG.src = "";
+
+        var h2TitleIMAGG = document.createElement("h2");
+        h2TitleIMAGG.id = "TitleIMAGG";
+
+        var figcaptionIMAGG = document.createElement("figcaption");
+        figcaptionIMAGG.id = "CaptionIMAGG";
+
+        figure.appendChild(imgIMAGG);
+        figure.appendChild(h2TitleIMAGG);
+        figure.appendChild(figcaptionIMAGG);
+
+        bodyIMAGG.appendChild(pExitIMAGG);
+        bodyIMAGG.appendChild(figure);
+
+        divIMAGG.appendChild(bodyIMAGG);
+        document.body.appendChild(divIMAGG);
+    }
+};
+
+function openTriggersForIMAGG() {
+    var openTriggers = document.querySelectorAll(".triggerIMAGG");
+
+    openTriggers.forEach(function (trigger) {
+
+        trigger.addEventListener("click", function triggerIMGG() {
+            // Bloqueamos scroll usando position: fixed
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.dataset.scrollY = scrollY;
+
+            // Configuración del modal
+            const divIMAGG = document.getElementById("DivIMAGG");
+            divIMAGG.style.overflowY = "scroll";
+            document.getElementById("IMAGG").src = this.getAttribute("src");
+            document.getElementById("TitleIMAGG").innerText = this.getAttribute("title");
+            
+            const caption = document.getElementById("CaptionIMAGG");
+            caption.innerHTML = ''; // Limpiamos caption
+
+            const alt = this.getAttribute("alt");
+
+            if (!this.hasAttribute("alt")) {
+                console.log('The HTML standard states that the "alt" attribute in an <img> tag is mandatory in terms of semantics!');
+            } else if (alt.includes("IMAGG_ls")) {
+                const lines = alt.split("IMAGG_ls");
+                const paragraphs = lines.map(line => `<p>${line}</p>`);
+                caption.innerHTML = paragraphs.join('');
+            } else {
+                caption.innerHTML = `<p>${alt}</p>`;
+            }
+
+            divIMAGG.classList.remove('hidden');
+        });
+
+        // Triggers para cerrar el modal
+        var closeTriggers = document.querySelectorAll(".exitIMAGG");
+
+        closeTriggers.forEach(function (trigger) {
+
+            trigger.addEventListener("click", function (e) {
+                if (e.target !== this) return;
+
+                // Restauramos scroll
+                const scrollY = document.body.dataset.scrollY;
+                document.body.style.position = '';
+                document.body.style.top = '';
+                window.scrollTo(0, scrollY);
+
+                // Cerramos modal
+                document.getElementById("DivIMAGG").classList.add('hidden');
+            });
+
+        });
+
+    });
+};
 
 document.addEventListener('DOMContentLoaded', render());
 
